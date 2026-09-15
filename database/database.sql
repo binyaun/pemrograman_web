@@ -13,4 +13,5 @@ CREATE TABLE user (
     jenis_kelamin ENUM('laki-laki', 'perempuan') NOT NULL,
     alamat TEXT NOT NULL,
     password VARCHAR(255) NOT NULL
+    foto VARCHAR(255) DEFAULT NULL
 );

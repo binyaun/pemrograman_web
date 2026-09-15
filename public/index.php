@@ -9,7 +9,7 @@
     <title>Website Pertama Saya</title>
 </head>
 
-<body>
+<body>.
 
     <!-- Container Login -->
     <div class="login">
@@ -17,7 +17,7 @@
         <div class="row g-0">
             <div class="col-sm-6">
                 <div class="gambar">
-                    <img src="../assets/images/kuda.webp" alt="Gambar Kuda">
+                    <img src="../assets/images/user.webp" alt="Gambar Kuda">
                 </div>
             </div>
             <div class="col-sm-6">

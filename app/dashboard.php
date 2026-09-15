@@ -1,7 +1,24 @@
+<?php
+
+  session_start();
+  require_once __DIR__ . '/../config/connect.php';
+
+  $get = [
+    'user' => $_SESSION['username'] ?? '',
+    'level' => $_SESSION['level'] ?? '',
+    'nim' => $_SESSION['nim'] ?? '',
+    'nama' => $_SESSION['nama'] ?? '',
+    'email' => $_SESSION['email'] ?? '',
+    'foto' => $_SESSION['foto'] ?? ''
+  ];
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Bootstrap 5 Website Example</title>
+  <title>Sistem Inventory Perusahaan </title>
+
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -15,63 +32,101 @@
   </style>
 
 </head>
-<body>
+<body class="container">
 
-<div class="p-5 bg-primary text-white text-center">
-  <h1>My First Bootstrap 5 Page</h1>
-  <p>Resize this responsive page to see the effect!</p> 
+<!-- Benner -->
+<div class="p-5 bg-white text-black text-center">
+  <div class="row">
+    <div class="col-sm-2 text-end"> 
+      <img src="../assets/images/pertamina.png" alt="Logo" width="150px" height="150px"> 
+    </div>
+    
+    <div class="col-sm-7">
+      <h2>PT Adalah Pokoknya</h2>
+      <h5>Jl. Ciptomangun Kusumo no 23</h5>
+      <h5>Telp. 085651371755, fax. 087678765454, email. prabowo99@gmail.com</h5>
+      <br>
+      <h5>yaa mau gimana lagi sod</h5>
+    </div>
+    
+    <div class="col-sm-3">
+      <img src="../assets/images/maskot.jpg" alt="Logo" width="150px" height="150px">
+    </div>
+  </div>
 </div>
+<!-- Benner --> 
 
+
+<!-- Navbar -->
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
   <div class="container-fluid">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link active" href="#">Active</a>
+        <a class="nav-link active" href="#">Home</a>
+        </li>
+          <li class="nav-item">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Master Data</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Barang</a></li>
+                  <li><a class="dropdown-item" href="#">Supplier</a></li>
+                  <li><a class="dropdown-item" href="#">Customer</a></li>
+                  <li><a class="dropdown-item" href="#">User</a></li>
+                </ul>
+        </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Transaksi</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
+        <a class="nav-link disabled" href="#">View</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
+        <a class="nav-link disabled" href="#">Laporan</a>
       </li>
     </ul>
   </div>
 </nav>
+<!-- Navbar -->
 
 <div class="container mt-5">
-  <div class="row">
-    <div class="col-sm-4">
-      <h2>About Me</h2>
-      <h5>Photo of me:</h5>
-      <div class="fakeimg">Fake Image</div>
-      <p>Some text about me in culpa qui officia deserunt mollit anim..</p>
-      <h3 class="mt-4">Some Links</h3>
-      <p>Lorem ipsum dolor sit ame.</p>
-      <ul class="nav nav-pills flex-column">
-        <li class="nav-item">
-          <a class="nav-link active" href="#">Active</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" href="#">Disabled</a>
-        </li>
-      </ul>
+  <div class="row g-4">
+    <!-- Side bar -->
+
+    <?php
+      $username = $_SESSION['username'] ?? '';
+      $level = $_SESSION['level'] ?? 0;
+      $profile = $connect->prepare('SELECT username, level, nim, nama_lengkap, email FROM `user` WHERE level = ? AND username = ?');
+      $profile->bind_param('is', $level, $username);
+      $profile->execute();
+      $result = $profile->get_result();
+
+      if ($row = $result->fetch_assoc()) {
+          $get['user'] = $row['username'];
+          $get['level'] = $row['level'];
+          $get['nim'] = $row['nim'];
+          $get['nama'] = $row['nama_lengkap'];
+          $get['email'] = $row['email'];
+          $get['foto'] = $row['foto'] ?? '../assets/images/default.jpg';
+      }
+    ?>
+    <aside class="col-sm-4">
+      <h2>Profile User</h2>
+      <hr>
+      <div> <img src = "<?php echo $get['foto']; ?>" alt="foto" width="300px" height="300px" ></div>
+      <hr>
       <div>
-        <a href="../public/index.php" class="btn btn-danger">Index</a>
+        <p>User : <?php echo $get['user']; ?></p>
+        <p>Level : <?php echo $get['level']; ?></p>
+        <p>NIM : <?php echo $get['nim']; ?></p>
+        <p>Nama : <?php echo $get['nama']; ?></p>
+        <p>Email : <?php echo $get['email']; ?></p>
+      <hr>
       </div>
+      <a href="../public/index.php" class="btn btn-danger mt-3">Logout</a>
+    </aside>
 
-
-      <hr class="d-sm-none">
-    </div>
-    <div class="col-sm-8">
+    <!-- Main content -->
+    <main class="col-sm-8">
       <h2>TITLE HEADING</h2>
       <h5>Title description, Dec 7, 2020</h5>
       <div class="fakeimg">Fake Image</div>
@@ -83,13 +138,16 @@
       <div class="fakeimg">Fake Image</div>
       <p>Some text..</p>
       <p>Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
-    </div>
+    </main>
+    <!-- Main content -->
   </div>
 </div>
+
+<!-- Footer -->
 
 <div class="mt-5 p-4 bg-dark text-white text-center">
   <p>Footer</p>
 </div>
-
+<!-- Footer -->
 </body>
 </html>
