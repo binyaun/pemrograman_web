@@ -3,6 +3,11 @@
   session_start();
   require_once __DIR__ . '/../config/connect.php';
 
+  if (!isset($_SESSION['username'])) {
+      header('Location: ../public/index.php?status=warning&msg=' . urlencode('Silakan login terlebih dahulu!'));
+      exit;
+  }
+
   $get = [
     'user' => $_SESSION['username'] ?? '',
     'level' => $_SESSION['level'] ?? '',
@@ -62,18 +67,17 @@
   <div class="container-fluid">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link active" href="#">Home</a>
-        </li>
-          <li class="nav-item">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Master Data</a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Barang</a></li>
-                  <li><a class="dropdown-item" href="#">Supplier</a></li>
-                  <li><a class="dropdown-item" href="#">Customer</a></li>
-                  <li><a class="dropdown-item" href="#">User</a></li>
-                </ul>
-        </li>
+        <a class="nav-link active" href="dashboard.php">Home</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Master Data</a>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="dashboard.php?p=user_verification">Verifikasi User</a></li>
+          <li><a class="dropdown-item" href="#">Supplier</a></li>
+          <li><a class="dropdown-item" href="#">Customer</a></li>
+          <li><a class="dropdown-item" href="#">User</a></li>
+        </ul>
+      </li>
       <li class="nav-item">
         <a class="nav-link" href="#">Transaksi</a>
       </li>
@@ -126,19 +130,42 @@
     </aside>
 
     <!-- Main content -->
-    <main class="col-sm-8">
-      <h2>TITLE HEADING</h2>
-      <h5>Title description, Dec 7, 2020</h5>
-      <div class="fakeimg">Fake Image</div>
-      <p>Some text..</p>
-      <p>Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
+    <div class="col-sm-8">
+      <?php 
+        $pages_dir = 'pages';
+        $p = $_GET['p'] ?? $_GET['P'] ?? '';
 
-      <h2 class="mt-5">TITLE HEADING</h2>
-      <h5>Title description, Sep 2, 2020</h5>
-      <div class="fakeimg">Fake Image</div>
-      <p>Some text..</p>
-      <p>Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
-    </main>
+        if (!empty($p)) {
+          if (is_dir($pages_dir)) {
+            $pages = scandir($pages_dir, 0);
+            unset($pages[0], $pages[1]);
+            if (in_array($p . '.php', $pages)) {
+              include($pages_dir . '/' . $p . '.php');
+            } elseif (file_exists('../' . $p . '.php')) {
+              include('../' . $p . '.php');
+            } elseif (file_exists($p . '.php')) {
+              include($p . '.php');
+            } else {
+              echo "<p>Halaman tidak ditemukan</p>";
+            }
+          } else {
+            if (file_exists($p . '.php')) {
+              include($p . '.php');
+            } elseif (file_exists('../' . $p . '.php')) {
+              include('../' . $p . '.php');
+            } else {
+              echo "<p>Halaman tidak ditemukan</p>";
+            }
+          }
+        } else {
+          if (file_exists('home.php')) {
+            include('home.php');
+          } else {
+            echo "<h2>Selamat Datang</h2><p>Selamat Datang di Aplikasi Inventory</p>";
+          }
+        }
+      ?>
+    </div>
     <!-- Main content -->
   </div>
 </div>

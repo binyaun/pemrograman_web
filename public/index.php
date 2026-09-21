@@ -13,7 +13,6 @@
 
     <!-- Container Login -->
     <div class="login">
-
         <div class="row g-0">
             <div class="col-sm-6">
                 <div class="gambar">

@@ -2,16 +2,19 @@ CREATE DATABASE IF NOT EXISTS dbs3alatih;
 
 USE dbs3alatih;
 
-CREATE TABLE user (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    level INT NOT NULL DEFAULT 1,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    nama_lengkap VARCHAR(100) NOT NULL,
-    nim VARCHAR(20) NOT NULL UNIQUE,
-    no_hp VARCHAR(20) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    jenis_kelamin ENUM('laki-laki', 'perempuan') NOT NULL,
-    alamat TEXT NOT NULL,
-    password VARCHAR(255) NOT NULL
-    foto VARCHAR(255) DEFAULT NULL
+CREATE TABLE IF NOT EXISTS `user` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `level` INT NOT NULL DEFAULT 1,
+    `username` VARCHAR(50) NOT NULL UNIQUE,
+    `nama_lengkap` VARCHAR(100) NOT NULL,
+    `nim` VARCHAR(20) NOT NULL UNIQUE,
+    `no_hp` VARCHAR(20) NOT NULL,
+    `email` VARCHAR(100) NOT NULL UNIQUE,
+    `jenis_kelamin` ENUM('laki-laki', 'perempuan') NOT NULL,
+    `alamat` TEXT NOT NULL,
+    `password` VARCHAR(255) NOT NULL,
+    `foto` VARCHAR(255) DEFAULT NULL,
+    `log` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `aktif` TINYINT(1) NOT NULL DEFAULT 1,
+    `hapus` TINYINT(1) NOT NULL DEFAULT 0
 );

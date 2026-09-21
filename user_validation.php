@@ -93,7 +93,11 @@
     }
 
     if ($result -> num_rows > 0) {
-        echo "<meta http-equiv='refresh' content='0; url=dashboard.php?lvl=$level&user=$username'>";
+
+        $_SESSION['username']= $username;
+        $_SESSION['level']= $level;
+
+        echo "<meta http-equiv='refresh' content='0; url=dashboard.php'>";
     } else {
         echo "<meta http-equiv='refresh' content='0; url=public/index.php'>";
         echo "<script>alert('Anda Gagal Login!');</script>";
