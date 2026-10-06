@@ -3,15 +3,44 @@ if (!isset($connect)) {
     require_once __DIR__ . '/../../config/connect.php';
 }
 
-$query = "SELECT * FROM `user`";
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
+if (empty($_SESSION['username']) || (int) ($_SESSION['level'] ?? 0) < 2) {
+    echo '<div class="alert alert-warning" role="alert">Hanya admin yang dapat melihat dan memproses verifikasi user.</div>';
+    return;
+}
+
+$csrf_token = $_SESSION['verification_csrf_token'] ?? '';
+if ($csrf_token === '') {
+    $csrf_token = bin2hex(random_bytes(32));
+    $_SESSION['verification_csrf_token'] = $csrf_token;
+}
+
+$query = "SELECT * FROM `registrasi` ORDER BY log ASC, id ASC";
 $result = $connect->query($query);
+$script_name = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+$app_base = rtrim(dirname($script_name), '/');
+if (basename($script_name) !== 'dashboard.php') {
+    $app_base .= '/app';
+}
 ?>
 
 <div>
     <h3>Verifikasi User Registrasi</h3>
     <hr>
-    <p>Data tabel pengguna dari database <code>dbs3alatih</code> (tabel <code>user</code>).</p>
+    <p>Data pendaftar yang menunggu persetujuan admin dari tabel <code>registrasi</code>.</p>
 </div>
+
+<?php if (isset($_GET['status'], $_GET['msg'])): ?>
+    <?php
+        $alert_class = $_GET['status'] === 'success' ? 'success' : ($_GET['status'] === 'warning' ? 'warning' : 'danger');
+    ?>
+    <div class="alert alert-<?php echo $alert_class; ?>" role="alert">
+        <?php echo htmlspecialchars($_GET['msg'], ENT_QUOTES, 'UTF-8'); ?>
+    </div>
+<?php endif; ?>
 
 <div class="container-fluid px-0 mt-3">
     <div class="card shadow-sm border-0">
@@ -34,7 +63,6 @@ $result = $connect->query($query);
                             <th>email</th>
                             <th>jenis_kelamin</th>
                             <th>alamat</th>
-                            <th>password</th>
                             <th>Options</th>
                         </tr>
                     </thead>
@@ -60,15 +88,23 @@ $result = $connect->query($query);
                                     <td><?php echo htmlspecialchars($row['email'] ?? ''); ?></td>
                                     <td><?php echo htmlspecialchars($row['jenis_kelamin'] ?? ''); ?></td>
                                     <td><?php echo htmlspecialchars($row['alamat'] ?? ''); ?></td>
-                                    <td><?php echo htmlspecialchars($row['password'] ?? ''); ?></td>
-                                    <td><button class='btn btn-success btn-sm'>Verifikasi</button>
-                                    <button class='btn btn-danger btn-sm'>Tolak</button>
+                                    <td class="text-center">
+                                        <form method="post" action="<?php echo htmlspecialchars($app_base . '/pages/user_verification_ver.php', ENT_QUOTES, 'UTF-8'); ?>" class="d-inline">
+                                            <input type="hidden" name="id" value="<?php echo (int) $row['id']; ?>">
+                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
+                                            <button class="btn btn-success btn-sm" type="submit">Verifikasi</button>
+                                        </form>
+                                        <form method="post" action="<?php echo htmlspecialchars($app_base . '/pages/user_verification_tolak.php', ENT_QUOTES, 'UTF-8'); ?>" class="d-inline" onsubmit="return confirm('Yakin ingin menolak dan menghapus data user ini?');">
+                                            <input type="hidden" name="id" value="<?php echo (int) $row['id']; ?>">
+                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
+                                            <button class="btn btn-danger btn-sm" type="submit">Tolak</button>
+                                        </form>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="15" class="text-center text-muted py-4">Data user tidak ditemukan.</td>
+                                <td colspan="11" class="text-center text-muted py-4">Tidak ada pendaftar yang menunggu verifikasi.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>

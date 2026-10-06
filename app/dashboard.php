@@ -43,7 +43,7 @@
 <div class="p-5 bg-white text-black text-center">
   <div class="row">
     <div class="col-sm-2 text-end"> 
-      <img src="../assets/images/pertamina.png" alt="Logo" width="150px" height="150px"> 
+      <img src="../assets/images/ks.png" alt="Logo" width="150px" height="150px"> 
     </div>
     
     <div class="col-sm-7">
@@ -55,7 +55,7 @@
     </div>
     
     <div class="col-sm-3">
-      <img src="../assets/images/maskot.jpg" alt="Logo" width="150px" height="150px">
+      <img src="../assets/images/tugu.jpeg" alt="Logo" width="150px" height="150px">
     </div>
   </div>
 </div>

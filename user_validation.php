@@ -33,8 +33,18 @@
             exit;
         }
 
-        $check = $connect->prepare('SELECT id FROM `user` WHERE username = ? OR nim = ? OR email = ?');
-        $check->bind_param('sss', $username, $nim, $email);
+        $check = $connect->prepare(
+            'SELECT 1 FROM `user` WHERE username = ? OR nim = ? OR email = ?
+             UNION ALL
+             SELECT 1 FROM `registrasi` WHERE username = ? OR nim = ? OR email = ?
+             LIMIT 1'
+        );
+        if (!$check) {
+            error_log('Gagal menyiapkan pemeriksaan registrasi: ' . $connect->error);
+            header('Location: public/index.php?status=error&msg=' . urlencode('Registrasi belum dapat diproses. Pastikan tabel registrasi sudah dibuat dari database/database.sql.'));
+            exit;
+        }
+        $check->bind_param('ssssss', $username, $nim, $email, $username, $nim, $email);
         $check->execute();
         $existing = $check->get_result();
 
@@ -44,11 +54,16 @@
         }
 
         $default_level = 1;
-        $insert = $connect->prepare('INSERT INTO `user` (level, username, nama_lengkap, nim, no_hp, email, jenis_kelamin, alamat, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $insert = $connect->prepare('INSERT INTO `registrasi` (level, username, nama_lengkap, nim, no_hp, email, jenis_kelamin, alamat, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        if (!$insert) {
+            error_log('Gagal menyiapkan penyimpanan registrasi: ' . $connect->error);
+            header('Location: public/index.php?status=error&msg=' . urlencode('Registrasi belum dapat disimpan. Silakan hubungi administrator.'));
+            exit;
+        }
         $insert->bind_param('issssssss', $default_level, $username, $nama, $nim, $no_hp, $email, $gender, $alamat, $password);
 
         if ($insert->execute()) {
-            header('Location: public/index.php?status=success&msg=' . urlencode('Registrasi berhasil. Silakan login!'));
+            header('Location: public/index.php?status=success&msg=' . urlencode('Registrasi berhasil dan menunggu verifikasi admin.'));
         } else {
             header('Location: public/index.php?status=error&msg=' . urlencode('Registrasi gagal disimpan ke database.'));
         }
@@ -71,7 +86,7 @@
             exit;
         }
 
-        $login = $connect->prepare('SELECT id, level, username, password FROM `user` WHERE level = ? AND username = ?');
+        $login = $connect->prepare('SELECT id, level, username, password FROM `user` WHERE level = ? AND username = ? AND aktif = 1 AND hapus = 0');
         $login->bind_param('is', $level, $username);
         $login->execute();
         $result = $login->get_result();
