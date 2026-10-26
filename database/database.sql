@@ -34,6 +34,30 @@ CREATE TABLE IF NOT EXISTS `registrasi` (
     `log` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS `kategori` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `kode_kategori` VARCHAR(30) NOT NULL UNIQUE,
+    `nama_kategori` VARCHAR(100) NOT NULL,
+    `keterangan` TEXT DEFAULT NULL,
+    `dibuat_pada` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `diperbarui_pada` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `barang` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `kategori_id` INT UNSIGNED NOT NULL,
+    `kode_barang` VARCHAR(30) NOT NULL UNIQUE,
+    `nama_barang` VARCHAR(150) NOT NULL,
+    `satuan_kecil` VARCHAR(30) NOT NULL,
+    `keterangan` TEXT DEFAULT NULL,
+    `dibuat_pada` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `diperbarui_pada` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_barang_kategori_id` (`kategori_id`),
+    CONSTRAINT `fk_barang_kategori`
+        FOREIGN KEY (`kategori_id`) REFERENCES `kategori` (`id`)
+        ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Pindahkan pendaftaran tertunda dari skema lama ke tabel registrasi.
 INSERT INTO `registrasi` (level, username, nama_lengkap, nim, no_hp, email, jenis_kelamin, alamat, password, foto)
 SELECT level, username, nama_lengkap, nim, no_hp, email, jenis_kelamin, alamat, password, foto

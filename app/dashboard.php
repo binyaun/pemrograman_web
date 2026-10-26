@@ -72,6 +72,9 @@
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Master Data</a>
         <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="dashboard.php?p=kategori">Kategori Barang</a></li>
+          <li><a class="dropdown-item" href="dashboard.php?p=barang">Data Barang</a></li>
+          <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item" href="dashboard.php?p=user_verification">Verifikasi User</a></li>
           <li><a class="dropdown-item" href="#">Supplier</a></li>
           <li><a class="dropdown-item" href="#">Customer</a></li>
